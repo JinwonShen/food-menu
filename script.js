@@ -80,3 +80,86 @@ const menu = [
     desc: `Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nihil repellendus repellat exercitationem commodi! Cumque perferendis molestias iste aliquam, nulla, qui reprehenderit ea, sequi eveniet dolorem praesentium aliquid aperiam vel libero!`,
   },
 ];
+
+window.addEventListener("DOMContentLoaded", () => {
+  displayMenuButtons();
+  displayMenuItems(menu);
+});
+
+const sectionCenterEl = document.querySelector(".section-center");
+const btnContainerEl = document.querySelector(".btn-container");
+
+function displayMenuButtons() {
+  // reduce 총 가격을 구할 때에도 자주 사용함.
+  const categories = menu.reduce(
+    (acc, curr) => {
+      if (!acc.includes(curr.category)) {
+        acc.push(curr.category);
+      }
+      return acc;
+    },
+    ["all"]
+  );
+  // [''] 누적
+  // ['all', 'dinner', 'shakes']
+
+  const categoryBtns = categories
+    .map((category) => {
+      return `<button type="button" class="filter-btn" data-id=${category}>${category}</button>`;
+    })
+    .join("");
+
+  // <button type="button" class="filter-btn" data-id="all">all</button>
+  // <button type="button" class="filter-btn" data-id="breakfast">
+  //   breakfast
+  // </button>
+  // <button type="button" class="filter-btn" data-id="lunch">lunch</button>
+  // <button type="button" class="filter-btn" data-id="shakes">
+  //   shakes
+  // </button>
+
+  btnContainerEl.innerHTML = categoryBtns;
+
+  const filtersBtns = btnContainerEl.querySelectorAll(".filter-btn");
+
+  filtersBtns.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const category = e.currentTarget.dataset.id;
+      console.log(category);
+
+      const menuCategory = menu.filter((menuItem) => {
+        if (menuItem.category === category) {
+          return menuItem;
+        }
+      });
+
+      if (category === "all") {
+        displayMenuItems(menu);
+      } else {
+        displayMenuItems(menuCategory);
+      }
+    });
+  });
+}
+
+function displayMenuItems(menuItems) {
+  let displayMenu = menuItems.map((item) => {
+    return `<article class="menu-item">
+        <img src=${item.img} alt=${item.title} class="photo" />
+        <div class="item-info">
+            <div class="header">
+                <h4>${item.title}</h4>
+                <h4 class="price">${item.price}원</h4>
+            </div>
+            <p class="item-text">
+                ${item.desc}
+            </p>
+        </div>
+    </article>`;
+  });
+
+  console.log(displayMenu);
+  displayMenu = displayMenu.join("");
+  console.log(displayMenu);
+  sectionCenterEl.innerHTML = displayMenu;
+}
